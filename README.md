@@ -1,4 +1,4 @@
-# Forum games enhancer
+# Forum games enhancer **[IN PROGRESS]**
 Creates an interactive scoreboard of the played game and adds a few enhancements
 
 ![Preview](http://eih.bz/s1/giftstl.gif)
