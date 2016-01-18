@@ -1,0 +1,11 @@
+#BD_FORUM_GAMES_ENHANCER table {
+  counter-reset: score;
+}
+
+#BD_FORUM_GAMES_ENHANCER .BD_GAMES_SCORE_COUNTER::before {
+  counter-increment: score; content: "#"counter(score);
+}
+
+#BD_FORUM_GAMES_ENHANCER .scoreboardsDiv {
+  padding-top: 15px;
+}
