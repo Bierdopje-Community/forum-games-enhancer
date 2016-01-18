@@ -1,0 +1,14 @@
+<table data-scoreboard data-start="{{ start }}" class="table table-bordered table-hover table-striped" style="display:none;">
+  <tr>
+    <th>&nbsp;</th>
+    <th>Gebruiker</th>
+    <th>Score</th>
+  </tr>
+  {{#each scores}}
+    <tr>
+      <td class="BD_GAMES_SCORE_COUNTER">&nbsp;</th>
+      <td>{{ username }}</th>
+      <td>{{ score }}</th>
+    </tr>
+  {{/each}}
+</table>
