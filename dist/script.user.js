@@ -57,7 +57,7 @@ Handlebars.partials = Handlebars.templates;
     urls.map(function (url) {
       var id = md5(url);
 
-      var promise = new Promise(function (resolve, reject) {
+      var promise = new Promise(function (resolve) {
         fetchCachedScoreboard(id, resolve, function () {
           // if it's not in cache, fetch it
           getScoreboardFromPage(url, resolve);
@@ -129,7 +129,7 @@ Handlebars.partials = Handlebars.templates;
     var url = windowLocation.replace('/last', '');  //remove /last
     url = url.replace(/\/\d+$/, ''); //remove pageNr /41
 
-    var forum = $('#page .maincontent .content .forumline');
+    var forum = $('.maincontent .content .forumline', '#page');
     var lastPage = $('.pagination ul.rightfloat li:eq(-1)', forum).text();
     lastPage = parseInt(lastPage);
 
@@ -211,7 +211,7 @@ Handlebars.partials = Handlebars.templates;
           _id: id,
           scoreBoard: [],
           createdAt: -1,
-          updatedAt: -1,
+          updatedAt: -1
         };
       } else {
         throw err;
@@ -235,9 +235,7 @@ Handlebars.partials = Handlebars.templates;
     var match;
     while ((match = regex.exec(body)) !== null) {
       var username = match[1]; // TODO trim
-      var score = parseInt(match[2]);
-
-      scores[username] = score;
+      scores[username] = parseInt(match[2]);
     }
 
     log('Found ' + Object.keys(scores).length + ' scores in comment.');
@@ -256,7 +254,7 @@ Handlebars.partials = Handlebars.templates;
       var commentId = parseInt(element.attr('id').split('-')[1]);
 
       var comment = {};
-      if (comments.hasOwnProperty(commentId))
+      if (comments.hasOwnProperty('' + commentId))
         comment = comments[commentId];
 
       if (elementType == 'replyheader') {
@@ -446,7 +444,7 @@ Handlebars.partials = Handlebars.templates;
         } else {
           return period;
         }
-      }
+      };
 
       this.isInPeriod = function (date, period) {
         var isBetween = date.isSameOrAfter(period.start, 'day');
@@ -475,11 +473,12 @@ Handlebars.partials = Handlebars.templates;
       var period = {
         start: moment(date).startOf(periodType),
         end: moment(date).endOf(periodType)
-      }
+      };
 
       if (isNormalPeriod)
         return period;
 
+      var month, adjust;
       if (originalPeriodType == 'trimester') {
         // Figure out in what part of the year we are
         /*
@@ -489,8 +488,8 @@ Handlebars.partials = Handlebars.templates;
          10,11,12 -> add 9 months to start
          */
 
-        var month = date.month() + 1;
-        var adjust = Math.ceil(month / 3) * 3 - 3;
+        month = date.month() + 1;
+        adjust = Math.ceil(month / 3) * 3 - 3;
 
         period.start = period.start.add(adjust, 'months');
         period.end = moment(period.start).add(3, 'months').subtract(1, 'day');
@@ -502,8 +501,8 @@ Handlebars.partials = Handlebars.templates;
          07,08,09,10,11,12 -> add 6 months to start
          */
 
-        var month = date.month() + 1;
-        var adjust = Math.ceil(month / 6) * 6 - 6;
+        month = date.month() + 1;
+        adjust = Math.ceil(month / 6) * 6 - 6;
 
         period.start = period.start.add(adjust, 'months');
         period.end = moment(period.start).add(6, 'months').subtract(1, 'day');
@@ -519,7 +518,6 @@ Handlebars.partials = Handlebars.templates;
     };
 
     ScoreBoardFactory.diffCalculator = function (newScores, oldScores) {
-      var usersNew = Object.keys(newScores);
       var usersOld = Object.keys(oldScores);
 
       var scores = {};
