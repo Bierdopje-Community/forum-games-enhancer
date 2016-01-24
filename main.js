@@ -141,6 +141,9 @@
 
       callback(scoreBoard);
 
+      if(scoreBoard.length <= 0)
+        return;
+
       var cacheData = {
         url: url,
         date: cacheDate,
