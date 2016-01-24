@@ -154,17 +154,18 @@
   function fetchCachedScoreboard(id, callback, errorCallback) {
     var curTimestamp = moment().unix();
 
-    return db.get(id).then(function (doc) {
-      var pageAge = curTimestamp - doc.createdAt;
+    db.get(id).then(function (doc) {
+      var pageAge = doc.updatedAt - doc.createdAt;
       var updatedAgo = curTimestamp - doc.updatedAt;
-      log('Found cache for ' + id);
+      log('Found cache for ' + id + ' with age ' + pageAge);
 
-      // If the page itself is younger than a week
-      // and the last update was more then a day ago
-      // we throw an error
+      // If the time between the last comment and time of insertion is less than a week.
+      // And the last update was more than a day ago.
+      // We callback an error.
       if (pageAge < 604800 && updatedAgo > 86400) {
-        log('However, it need a refresh');
-        throw new Error('Page needs a refresh');
+        log('However, it needs a refresh');
+        errorCallback('Page needs a refresh');
+        return;
       }
 
       callback(doc.scoreBoard);
