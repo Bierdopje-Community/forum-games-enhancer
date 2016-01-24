@@ -1,0 +1,25 @@
+// ==UserScript==
+// @name       BD Forum game enhancer
+// @namespace  http://www.bierdopje.com
+// @version    0.02
+// @description  Creates an interactive scoreboard of the played games and a few enhancements
+// @grant      unsafeWindow
+// @match      http://www.bierdopje.com/forum/forum-games/topic/*
+// @require    https://code.jquery.com/jquery-2.1.4.min.js
+// @require    https://cdnjs.cloudflare.com/ajax/libs/pouchdb/5.2.0/pouchdb.min.js
+// @require    https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.1.0/js/md5.min.js
+// @require    https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment-with-locales.min.js
+// @require    https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js
+// @require    https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js
+// @copyright  2016+, Robin Houtevelts
+// @run-at     document-start
+// ==/UserScript==
+
+if (window.top != window.self)
+  return;
+
+moment.locale('nl');
+
+var DEBUG = false;
+var windowLocation = window.location.href.split("#")[0];
+
