@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+ROOT_DIR=`git rev-parse --show-toplevel`;
+USERSCRIPT="./dist/script.user.js";
+USERSCRIPT_HEADER="./scripts/data/userscript_head.txt";
+MAINSCRIPT="main.js";

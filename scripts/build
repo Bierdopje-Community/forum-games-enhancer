@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+ROOT_DIR=`git rev-parse --show-toplevel`;
+# Move to the root directory
+cd "${ROOT_DIR}";
+
+# Load project info
+source "./scripts/configuration";
+
+# Check if handlebars is installed
+command -v handlebars >/dev/null 2>&1 || { echo >&2 "handlebars not found. Please install using npm install -g handlebars"; exit 1; }
+
+# Add header
+cat "${USERSCRIPT_HEADER}" > "${USERSCRIPT}";
+
+# Compile Handlebars templates and add them to the script
+find ./html -name "*.hbs" -exec handlebars -e "hbs" -m "{}" >> "${USERSCRIPT}" \;
+
+# Pre-compiled templates are the same as partials
+# So instead of writing partials, I pre-compile everything
+# And then make every template also available as a partial.
+# http://stackoverflow.com/a/21173410/1306509
+# http://stackoverflow.com/a/12148609/1306509
+echo 'Handlebars.partials = Handlebars.templates;' >> "${USERSCRIPT}";
+# Add newline
+echo '' >> "${USERSCRIPT}";
+
+# Add main script
+# TODO: compile using browserify and babel
+cat "${MAINSCRIPT}" >> "${USERSCRIPT}";
+
+exit 0;
