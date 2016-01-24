@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# post-commit script you can append/create in .git/hooks/post-commit
+# This script will commit whatever we created in ./scripts/pre-commit
+# Since git 2.0 you cannot git add in pre-commit and expect it to be in the same commit
+# Hence this fix in post-commit
+# See http://stackoverflow.com/a/12802592/1306509
+
+# Load variables from configuration-file
+source "./scripts/configuration";
+
+# Check if the .commit file created by ./scripts/pre-commit exists
+if [ -e ".commit" ]; then
+  # Delete the .commit file
+  rm ".commit";
+  # Stage the build userscript for commit
+  git add "${USERSCRIPT}";
+  # Perform the actual commit, --no-verify prevents execution of pre-commit so we don't end up in a loop.
+  git commit --amend -C HEAD --no-verify;
+fi
+exit 0;

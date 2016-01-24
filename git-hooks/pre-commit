@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# pre-commit script you can append/create in .git/hooks/pre-commit
+# This script will run our builder before each commit
+
+if ./scripts/build; then
+  # Create .commit file, we will look for this in ./scripts/post-commit
+  touch ".commit";
+  exit 0;
+fi
+
+exit 1;
