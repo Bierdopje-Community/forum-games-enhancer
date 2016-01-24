@@ -43,6 +43,7 @@ Handlebars.partials = Handlebars.templates;
   });
 
   $(function () {
+    DEBUG = true;
     init();
   });
 
@@ -149,29 +150,25 @@ Handlebars.partials = Handlebars.templates;
 
       var scoreBoard = [];
       var cacheDate = null; // newest commentDate on page ( for cache purposes )
-      getCommentsOnPage(forum, function (comments) {
-        comments.map(function (comment) {
-          extractScoresFromComment(comment, function (scores) {
-            if (Object.keys(scores).length <= 0)
-              return true; // continue
+      var comments = getCommentsOnPage(forum);
+      comments.map(function (comment) {
+        var scores = extractScoresFromComment(comment);
+        if (Object.keys(scores).length <= 0)
+          return true; // continue
 
-            // replace cacheDate if the new date is newer
-            if (!cacheDate || cacheDate.isBefore(comment.date)) {
-              console.log(comment.date);
-              cacheDate = comment.date;
-            }
+        // replace cacheDate if the new date is newer
+        if (!cacheDate || cacheDate.isBefore(comment.date))
+          cacheDate = comment.date;
 
-            scoreBoard.push({
-              date: comment.date.unix(), // format in unix for db
-              scores: scores
-            });
-          });
+        scoreBoard.push({
+          date: comment.date.unix(), // format in unix for db
+          scores: scores
         });
       });
 
       callback(scoreBoard);
 
-      if(scoreBoard.length <= 0)
+      if (scoreBoard.length <= 0)
         return;
 
       var cacheData = {
@@ -228,7 +225,7 @@ Handlebars.partials = Handlebars.templates;
     });
   }
 
-  function extractScoresFromComment(comment, callback) {
+  function extractScoresFromComment(comment) {
     // TODO: make sure the scoreboard wasn't quoted
     var regex = /\s?\d+[\.\)]\s?([^,]*?)\s?\(\s?(\d+)\s* punt/gi;
     var body = comment.bodyel.text();
@@ -243,12 +240,10 @@ Handlebars.partials = Handlebars.templates;
 
     log('Found ' + Object.keys(scores).length + ' scores in comment.');
 
-    if (typeof callback == 'function')
-      callback(scores);
     return scores;
   }
 
-  function getCommentsOnPage(forum, callback) {
+  function getCommentsOnPage(forum) {
     var comments = {};
 
     $('tr[id^="reply"]', forum).each(function () {
@@ -287,14 +282,20 @@ Handlebars.partials = Handlebars.templates;
         && comment.hasOwnProperty('body')
         && comment.hasOwnProperty('bodyel');
 
-      if (isValid)
+      if (isValid) {
+        if (!comment.date) {
+          console.error(comment);
+          throw new Error('This comment has no correct date');
+        }
+
         validComments.push(comment);
+      }
     });
     comments = validComments;
 
     log('Found ' + comments.length + ' comments');
 
-    callback(comments);
+    return comments;
   }
 
   function foundComment(commentContent) {
