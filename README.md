@@ -1,7 +1,7 @@
 # Forum games enhancer **[IN PROGRESS]**
 Creates an interactive scoreboard of the played game and adds a few enhancements
 
-![Preview](http://eih.bz/s1/giftstl.gif)
+![Preview](http://eih.bz/s1/gifsgsi.gif)
 
 Since the forum games at Bierdopje are one of the few active things
 We feel they deserve a better way to manage the score.
