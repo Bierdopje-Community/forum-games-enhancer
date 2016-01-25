@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       BD Forum game enhancer
 // @namespace  http://www.bierdopje.com
-// @version    0.03
+// @version    0.04
 // @description  Creates an interactive scoreboard of the played games and a few enhancements
 // @grant      unsafeWindow
 // @match      http://www.bierdopje.com/forum/forum-games/topic/*
