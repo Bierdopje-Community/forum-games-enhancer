@@ -1,0 +1,35 @@
+[b]Bierdopje forum games enhancer[/b] userscript
+
+De forum games op Bierdopje zijn een van de meest actieve onderdelen op Bierdopje. Echter kan het soms lastig zijn de score bij te houden. Daarnaast is het ook niet uitnodigend voor nieuwe leden om te wedijveren omdat zij starten met een score van [b]0[/b].
+
+Het script activeerd zich enkel in de threads van [url=http://www.bierdopje.com/forum/forum-games]forum games[/url].
+Daar biedt het u:
+[list]
+[*] Een interface om de score te zien per maand.
+[*] Een knop bij elk antwoord om met 1 druk het scorebord te updaten.
+[*] [b][TODO][/b] Een notifier om meldingen te krijgen bij een nieuw antwoord.
+[/list]
+Een voorbeeld:
+[img]http://eih.bz/s1/gifsgsi.gif[/img]
+
+Om te [b]installeren[/b] heb je een extensie nodig in je browser:
+[color=red]Rood[/color] wilt zeggen dat het niet getest is in die browser en dus fouten kan vertonen:
+[list]
+[*] [b]Chrome[/b] => [url=https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en]Tampermonkey[/url]
+[*] [color=red]Firefox[/color] => [url=https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/]GreaseMonkey[/url]
+[*] [color=red]Opera[/color] => [url=https://addons.opera.com/en/extensions/details/tampermonkey-beta]Tampermonkey Beta[/url]
+[/list]
+Vervolgens kan je het script hier [b]installeren[/b]:
+[url=https://github.com/Bierdopje-Community/forum-games-enhancer/raw/master/dist/script.user.js]https://github.com/Bierdopje-Community/forum-games-enhancer/raw/master/dist/script.user.js[/url]
+
+De code is vrij beschikbaar op Github.
+[list]
+[*] [url=https://github.com/Bierdopje-Community/forum-games-enhancer]Bierdopje-Community/forum-games-enhancer[/url]
+[/list]
+Net zoals bij de andere scripts is er niet veel documentatie en is de code niet verzorgd. O-) Dit komt nog wel in orde :)
+
+Als er fouten zijn mag je me dat altijd in dit topic laten weten óf op [url=https://github.com/Bierdopje-Community/forum-games-enhancer/issues]github[/url].
+
+Ik hoop dat het nuttig mag zijn voor iemand.
+
+De verdere ontwikkeling van dit script -tenzij er echt achter gevraagd wordt- zal even gepauzeerd worden. [user]Tom[/user] en ik gaan ons tijdelijk focussen op de zoek-mogelijkheden van Bierdopje. Bugs zullen natuurlijk wel gewoon behandeld worden.
