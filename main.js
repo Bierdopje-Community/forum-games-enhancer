@@ -55,7 +55,10 @@
       button.attr('title', 'Markeer dit antwoord als correct!');
 
       button.click(function () {
-        var currentScores = $.extend({}, currentScoreboard.scores);
+        var currentScores = {};
+        if (currentScoreboard && currentScoreboard.scores)
+          currentScores = $.extend({}, currentScoreboard.scores);
+
         var score = 1;
 
         if (currentScores.hasOwnProperty(comment.user.name))
