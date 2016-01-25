@@ -1,0 +1,3 @@
+{{~#each scores~}}
+  {{#if isWinner}}[b]{{/if}}{{lpad position}}. {{user}} ({{score}} punten){{~#if isWinner}}[/b]{{/if}}
+{{/each}}

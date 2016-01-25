@@ -2,22 +2,126 @@
   insertCSS('https://rawgit.com/Bierdopje-Community/forum-games-enhancer/master/dist/scoped-twbs.css');
   insertCSS('https://rawgit.com/Bierdopje-Community/forum-games-enhancer/master/dist/stylesheet.css');
 
-  if (/db.destroy.games.scoreboard/.test(windowLocation)) {
-    new PouchDB('BD.games.scoreboard').destroy();
-    log('Destroyed database');
-    return; //quit
+  function clearDatabaseCheck() {
+    if (/db.destroy.games.scoreboard/.test(windowLocation)) {
+      new PouchDB('BD.games.scoreboard').destroy();
+      log('Destroyed database');
+      return; //quit
+    }
   }
 
   var db = new PouchDB('BD.games.scoreboard', {
     auto_compaction: true
   });
 
+  var currentScoreboard;
+
   $(function () {
     DEBUG = true;
-    init();
+    clearDatabaseCheck();
+    init(function () {
+      addButtons();
+    });
   });
 
-  function init() {
+  function addButtons() {
+    var forumReal = $('.maincontent .content .forumline', '#page');
+    var forum = forumReal.clone(); // clone so I can remove elements but not from DOM
+    $('tr[id$="1337"]', forum).detach(); // remove comments made by this script
+
+    var comments = {};
+    getCommentsOnPage(forum).map(function (comment) {
+      // Only keep commentIds older than the current scoreboard date
+      if (comment.date.unix() <= currentScoreboard.date)
+        return true; // continue
+      comments[comment.id] = comment;
+    });
+
+    // loop over all comments and inject buttons where necessary
+    $('tr[id^="replyheader"] img[src$="comments.png"]', forumReal).each(function () {
+      var element = $(this);
+      var td = element.closest('td');
+      var tr = td.closest('tr');
+
+      // check if id is in filtered commentIds;
+      var commentId = tr.attr('id').substr(12);
+      if (!(comments.hasOwnProperty(commentId)))
+        return true; // continue
+
+      var comment = comments[commentId];
+
+      var button = $('<a href="#replybox" class="twbs BD__FORUM_GAMES_CORRECT_ANSER"></a>');
+      button.append('<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>');
+      button.attr('title', 'Markeer dit antwoord als correct!');
+
+      button.click(function () {
+        var currentScores = $.extend({}, currentScoreboard.scores);
+        var score = 1;
+
+        if (currentScores.hasOwnProperty(comment.user.name))
+          score += currentScores[comment.user.name];
+
+        currentScores[comment.user.name] = score;
+
+        var usersWithScoreOfOne = [];
+        Object.keys(currentScores).map(function (username) {
+          var score = currentScores[username];
+          if (score > 1)
+            return true; // continue
+
+          usersWithScoreOfOne.push(username);
+          delete currentScores[username];
+        });
+        usersWithScoreOfOne = usersWithScoreOfOne.join(', ');
+
+        var usersSorted = Object.keys(currentScores);
+        usersSorted.sort(function (a, b) {
+          var val = currentScores[b] - currentScores[a];
+          if (val == 0)
+            val = a.localeCompare(b);
+
+          return val;
+        });
+
+        var i = 0;
+        var templateData = usersSorted.map(function (user) {
+          return {
+            position: ++i,
+            user: user,
+            score: currentScores[user],
+            isWinner: user == comment.user.name
+          }
+        });
+
+        var replyText = Handlebars.templates.scoreboardReply({
+          'scores': templateData
+        });
+
+        if (usersWithScoreOfOne.length)
+          replyText += lpad(usersSorted.length + 1) + '. ' + usersWithScoreOfOne + ' (1 punt)';
+
+        $.post('http://www.bierdopje.com/ajax', {
+          'action': 'GetQuote',
+          'qid': comment.id,
+          'type': 'forum'
+        }, function (data) {
+          var start = data.indexOf('<message>') + 9;
+          var end = data.indexOf('</message>');
+          var message = data.substring(start, end);
+          $('#replybox').text(
+            message + 'Correct!' + "\r\n\r\n" + replyText
+          );
+        });
+
+      });
+
+      td.prepend(button);
+    });
+
+
+  }
+
+  function init(callback) {
     log('Getting url\'s on page');
     var urls = getPageUrls();
     log('Found ' + urls.length + ' on page');
@@ -46,13 +150,14 @@
         log('No scores found');
         return;
       }
-
+      currentScoreboard = scores.slice(-1)[0]; // last element
       log('Found ' + scores.length + ' scores in this thread');
 
       var comment = $(Handlebars.templates.forumRow());
       $('.content.go-wide table.forumline tr[id^="replyside"]').last().after(comment);
 
       updatePeriodType(period);
+      callback();
     });
 
     var updatePeriodType = function (newPeriod) {
@@ -198,15 +303,24 @@
 
   function extractScoresFromComment(comment) {
     // TODO: make sure the scoreboard wasn't quoted
-    var regex = /\s?\d+[\.\)]\s?([^,]*?)\s?\(\s?(\d+)\s* punt/gi;
+    var regex = /\s?\d+[\.\)]\s?(.*?)\s?\(\s?(\d+)\s* punt/gi;
     var body = comment.bodyel.text();
 
     var scores = {};
 
     var match;
     while ((match = regex.exec(body)) !== null) {
-      var username = match[1]; // TODO trim
-      scores[username] = parseInt(match[2]);
+      var username = match[1].trim();
+      var score = parseInt(match[2]);
+
+      if (score == 1) {
+        username.split(',').map(function (username) {
+          username = username.trim();
+          scores[username] = 1;
+        });
+      } else {
+        scores[username] = score;
+      }
     }
 
     log('Found ' + Object.keys(scores).length + ' scores in comment.');
@@ -518,3 +632,17 @@
     return ScoreBoardFactory;
   })();
 })();
+
+Handlebars.registerHelper('lpad', function (text, width) {
+  return lpad(text, width);
+});
+
+function lpad(n, width, z) {
+  z = z || '0';
+  if (typeof width == 'object')
+    width = 2;
+  width = width || 2;
+  n = n + '';
+
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
