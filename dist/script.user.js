@@ -48,7 +48,6 @@ Handlebars.partials = Handlebars.templates;
   var currentScoreboard;
 
   $(function () {
-    DEBUG = true;
     clearDatabaseCheck();
     init(function () {
       addButtons();

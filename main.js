@@ -17,7 +17,6 @@
   var currentScoreboard;
 
   $(function () {
-    DEBUG = true;
     clearDatabaseCheck();
     init(function () {
       addButtons();
